@@ -26,13 +26,12 @@ for car in cars:
 	#		"model": car.find('a', attrs={"class": "su-post-title"}),
 	#		"dateAdded": car.find('div', attrs={"class": "su-post-meta"})
 	#	}
-	dateAdded = car.find('div', attrs={"class": "su-post-meta"})
+	dateAdded = car.find('div', attrs={"class": "su-post-meta"}).text
 	titles = car.find('h2', attrs={"class": "su-post-title"})
 	titleText= titles.find('a').contents[0]
 	carObject = {
 	"model": titleText,
-	"dateAdded": dateAdded
-	}
+	"dateAdded": dateAdded.strip('\n\t')}
 	carArray.append(carObject)
 print(carArray)
 
