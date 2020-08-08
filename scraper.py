@@ -31,7 +31,7 @@ for car in cars:
 	titleText= titles.find('a').contents[0]
 	carObject = {
 	"model": titleText,
-	"dateAdded": dateAdded.strip('\n\t')}
+	"dateAdded": dateAdded.strip('\n\t').replace('Posted: ','')}
 	carArray.append(carObject)
 print(carArray)
 
