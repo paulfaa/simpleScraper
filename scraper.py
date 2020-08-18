@@ -1,35 +1,64 @@
 #python 3.8.4
 #need to run in virtual environment
-#scrape tool using AWS lamda and SNS
+#scrape tool using BeuatifulSoup and AWS lambda
 
 from bs4 import BeautifulSoup
 import requests
 import json
 from datetime import datetime
+import re
 
 def getData():
+	urlList = []
 	url = 'https://trustplanning.world/used-car-inventory-list/'
-	try:
-		response = requests.get(url, timeout = 5)
-		content = BeautifulSoup(response.content, "html.parser")
-	except:
-		print("Connection failed - check URL")
+	localUrl = "C:\\Users\\Paul\\kikaku.html"
+	content = BeautifulSoup(open("C:\\Users\\Paul\\kikaku.html",encoding="utf8"), "html.parser")
+	
+	#code uncomment below and change localUrl to url to connect to live website
+	# try:
+		# response = requests.get(localUrl, timeout = 5)
+		# content = BeautifulSoup(response.content, "html.parser")
+	# except:
+		# print("Connection failed - check URL")
+	
 	carArray = []	
 	cars = content.findAll('div', attrs={"class": "su-post"})
-	for car in cars:
+	
+	#PROBABLY NOT NEEDED
+	headers = content.findAll('h2',attrs={"class": "su-post-title"})
+	for h2 in headers:
+		links = h2.find_all('a')
+		type(links)
+		#for link in links:
+		#	print(link)
+		#	print(' , ')
 
-		#carObject = {
-		#		"model": car.find('a', attrs={"class": "su-post-title"}),
-		#		"dateAdded": car.find('div', attrs={"class": "su-post-meta"})
-		#	}
+	
+	for car in cars:
 		dateAdded = car.find('div', attrs={"class": "su-post-meta"}).text
 		titles = car.find('h2', attrs={"class": "su-post-title"})
 		titleText= titles.find('a').contents[0]
+		urls = titles.find('a',href=True)
+		print(urls['href'])
+		
+		for url in urls:
+			if 'bnr32' in url:
+				urlList.append(url)
+		#print(urlList)
+		
+		#print
+		#if "bnr32" or "BNR32" in titleText:
+		#	subUrl = titles.find('a')
+		#	print(subUrl)
+			#urlList.append()
+		
 		carObject = {
 		"model": titleText,
+		#"year": 
 		"dateAdded": dateAdded.strip('\n\t').replace('Posted: ','')}
 		carArray.append(carObject)
-	print(carArray)
+	#print(carArray)
+	
 	try:
 		with open('carList.json', 'w') as outfile:
 			json.dump(carArray, outfile)
@@ -58,5 +87,12 @@ def parseData():
 	else:
 		print("No new bnr32 added today")
 				
+# def main():
+	# getData()
+	# parseData()
+	
+# if __name__ == "__main__":
+    # main()
+	
 getData()
-parseData()
+#parseData()
