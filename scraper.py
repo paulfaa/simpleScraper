@@ -13,6 +13,7 @@ def getData():
 	url = 'https://trustplanning.world/used-car-inventory-list/'
 	localUrl = "C:\\Users\\Paul\\kikaku.html"
 	content = BeautifulSoup(open("C:\\Users\\Paul\\kikaku.html",encoding="utf8"), "html.parser")
+	subContent = BeautifulSoup(open("C:\\Users\\Paul\\kikakuSubpage.html",encoding="utf8"), "html.parser")
 	
 	#code uncomment below and change localUrl to url to connect to live website
 	# try:
@@ -24,46 +25,51 @@ def getData():
 	carArray = []	
 	cars = content.findAll('div', attrs={"class": "su-post"})
 	
-	#PROBABLY NOT NEEDED
-	headers = content.findAll('h2',attrs={"class": "su-post-title"})
-	for h2 in headers:
-		links = h2.find_all('a')
-		type(links)
-		#for link in links:
-		#	print(link)
-		#	print(' , ')
-
+	#for scraping date from subpage
+	table = subContent.findAll('table', style={"width: 1395px; border-collapse: collapse;"})
+	#print(table)
+	for row in table:
+		x = table.find('tbody')
+	print(x)
+	#table_body = table.findAll('tbody')
+	#row = table_body.find_all('tr')[1]
+	#print(row)
+	
 	
 	for car in cars:
 		dateAdded = car.find('div', attrs={"class": "su-post-meta"}).text
 		titles = car.find('h2', attrs={"class": "su-post-title"})
 		titleText= titles.find('a').contents[0]
-		urls = titles.find('a',href=True)
-		print(urls['href'])
-		
+		#urls = titles.find('a',href=True).get('href')
+		urls = titles.find('a').attrs['href'].split()
 		for url in urls:
-			if 'bnr32' in url:
-				urlList.append(url)
-		#print(urlList)
-		
-		#print
-		#if "bnr32" or "BNR32" in titleText:
-		#	subUrl = titles.find('a')
-		#	print(subUrl)
-			#urlList.append()
+			urlList.append(url)
 		
 		carObject = {
 		"model": titleText,
+		"url": urls,
 		#"year": 
 		"dateAdded": dateAdded.strip('\n\t').replace('Posted: ','')}
 		carArray.append(carObject)
 	#print(carArray)
+	
+	
+	validUrls = [u for u in urlList if "bnr32" in u]
+	print('Number of good URLS ',len(validUrls))
+	print('total urls ',len(urlList))
+	
+		
+	#can delete this after debug
+	with open('your_file.txt', 'w') as f:
+		for item in urlList:
+			f.write(item)
 	
 	try:
 		with open('carList.json', 'w') as outfile:
 			json.dump(carArray, outfile)
 	except:
 		print("Write to file failed")
+	
 		
 def parseData():
 	t = datetime.now()
