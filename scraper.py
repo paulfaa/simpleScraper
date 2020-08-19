@@ -27,14 +27,11 @@ def getData():
 	
 	#for scraping date from subpage
 	table = subContent.findAll('table', style={"width: 1395px; border-collapse: collapse;"})
-	#print(table)
 	for row in table:
-		x = table.find('tbody')
-	print(x)
-	#table_body = table.findAll('tbody')
-	#row = table_body.find_all('tr')[1]
-	#print(row)
-	
+		fullDate = row.findAll('h4')[1].text
+		date = fullDate[0:4]
+		print(date)
+		
 	
 	for car in cars:
 		dateAdded = car.find('div', attrs={"class": "su-post-meta"}).text
