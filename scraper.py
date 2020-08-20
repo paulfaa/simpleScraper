@@ -8,56 +8,67 @@ import json
 from datetime import datetime
 import re
 
+def getManufatureDate(subUrl):
+	#for scraping date from subpage
+	subContent = BeautifulSoup(open("C:\\Users\\Paul\\kikakuSubpage.html",encoding="utf8"), "html.parser")
+	#uncomment below to connect to live site
+	# try:
+		# response = requests.get(subUrl, timeout = 5)
+		# subContent = BeautifulSoup(response.content, "html.parser")
+	# except:
+		# print("Connection failed - check URL")
+	table = subContent.findAll('table', style={"width: 1395px; border-collapse: collapse;"})
+	for row in table:
+		fullDate = row.findAll('h4')[1].text
+		date = fullDate[0:4]
+	return date
+
 def getData():
 	urlList = []
 	url = 'https://trustplanning.world/used-car-inventory-list/'
 	localUrl = "C:\\Users\\Paul\\kikaku.html"
 	content = BeautifulSoup(open("C:\\Users\\Paul\\kikaku.html",encoding="utf8"), "html.parser")
-	subContent = BeautifulSoup(open("C:\\Users\\Paul\\kikakuSubpage.html",encoding="utf8"), "html.parser")
 	
-	#code uncomment below and change localUrl to url to connect to live website
+	#code uncomment below to connect to live website
 	# try:
-		# response = requests.get(localUrl, timeout = 5)
+		# response = requests.get(url, timeout = 5)
 		# content = BeautifulSoup(response.content, "html.parser")
 	# except:
 		# print("Connection failed - check URL")
-	
+		
 	carArray = []	
 	cars = content.findAll('div', attrs={"class": "su-post"})
+	print('type')
+	print(type(cars))
 	
-	#for scraping date from subpage
-	table = subContent.findAll('table', style={"width: 1395px; border-collapse: collapse;"})
-	for row in table:
-		fullDate = row.findAll('h4')[1].text
-		date = fullDate[0:4]
-		print(date)
-		
 	
 	for car in cars:
-		dateAdded = car.find('div', attrs={"class": "su-post-meta"}).text
-		titles = car.find('h2', attrs={"class": "su-post-title"})
-		titleText= titles.find('a').contents[0]
-		#urls = titles.find('a',href=True).get('href')
-		urls = titles.find('a').attrs['href'].split()
-		for url in urls:
-			urlList.append(url)
-		
-		carObject = {
-		"model": titleText,
-		"url": urls,
-		#"year": 
-		"dateAdded": dateAdded.strip('\n\t').replace('Posted: ','')}
-		carArray.append(carObject)
-	#print(carArray)
-	
-	
-	validUrls = [u for u in urlList if "bnr32" in u]
-	print('Number of good URLS ',len(validUrls))
-	print('total urls ',len(urlList))
+		#not working properly
+		if 'bnr32' or 'BNR32' in car.text(): 
+			#print('found')
+			dateAdded = car.find('div', attrs={"class": "su-post-meta"}).text
+			titles = car.find('h2', attrs={"class": "su-post-title"})
+			titleText= titles.find('a').contents[0]
+			#urls = titles.find('a',href=True).get('href')
+			urls = titles.find('a').attrs['href'].split()
+			for url in urls:
+				urlList.append(url)
+			year = getManufatureDate(url)
+			carObject = {
+			"model": titleText,
+			"url": urls,
+			"year": year, 
+			"dateAdded": dateAdded.strip('\n\t').replace('Posted: ','')}
+			carArray.append(carObject)
+
+			#need to add this inside for car loop
+			validUrls = [u for u in urlList if "bnr32" in u]
+			#print('Number of good URLS ',len(validUrls))
+			#print('total urls ',len(urlList))
 	
 		
 	#can delete this after debug
-	with open('your_file.txt', 'w') as f:
+	with open('urlList.txt', 'w') as f:
 		for item in urlList:
 			f.write(item)
 	
