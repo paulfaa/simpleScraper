@@ -46,22 +46,25 @@ def getData():
 	
 	for car in cars:
 		#not working properly
-		#can use regex here for better accuracy
-		if 'bnr32' or 'BNR32' in car.text(): 
+		#can use rege
+
+		titles = car.find('h2', attrs={"class": "su-post-title"})
+		titleText= titles.find('a').contents[0]
+		if any( x in titleText for x in ['BNR32', 'bnr32']):
 			#print('found')
 			dateAdded = car.find('div', attrs={"class": "su-post-meta"}).text
-			titles = car.find('h2', attrs={"class": "su-post-title"})
-			titleText= titles.find('a').contents[0]
+			
 			#urls = titles.find('a',href=True).get('href')
+			#rewrite this part, cleaner to get just this url instead of all every time
 			urls = titles.find('a').attrs['href'].split()
 			for url in urls:
 				urlList.append(url)
 			year = getManufatureDate(url)
 			carObject = {
-			"model": titleText,
-			"url": urls,
-			"year": year, 
-			"dateAdded": dateAdded.strip('\n\t').replace('Posted: ','')}
+				"model": titleText,
+				"url": urls,
+				"year": year, 
+				"dateAdded": dateAdded.strip('\n\t').replace('Posted: ','')}
 			carArray.append(carObject)
 
 			#need to add this inside for car loop
