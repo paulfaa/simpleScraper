@@ -9,7 +9,13 @@ import json
 from datetime import datetime
 import re
 
-def getManufatureDate(subUrl):
+urlList = []
+url = 'https://trustplanning.world/used-car-inventory-list/'
+filterResults = False
+MAX_PRICE = 2000000
+MAX_YEAR = 1991
+
+def getSubpageData(subUrl):
 	#for scraping date from subpage
 	subContent = BeautifulSoup(open("C:\\Users\\Paul\\kikakuSubpage.html",encoding="utf8"), "html.parser")
 	#uncomment below to connect to live site
@@ -21,13 +27,13 @@ def getManufatureDate(subUrl):
 		# print("Connection failed - check URL")
 	table = subContent.findAll('table', style={"width: 1395px; border-collapse: collapse;"})
 	for row in table:
+		price = re.sub('\D', '', row.findAll('h4')[6].text)
 		fullDate = row.findAll('h4')[1].text
 		date = fullDate[0:4]
-	return date
+	print(price)
+	return [price, date]
 
 def getData():
-	urlList = []
-	url = 'https://trustplanning.world/used-car-inventory-list/'
 	localUrl = "C:\\Users\\Paul\\kikaku.html"
 	content = BeautifulSoup(open("C:\\Users\\Paul\\kikaku.html",encoding="utf8"), "html.parser")
 	
@@ -40,44 +46,41 @@ def getData():
 		
 	carArray = []	
 	cars = content.findAll('div', attrs={"class": "su-post"})
-	print('type')
-	print(type(cars))
-	
 	
 	for car in cars:
-		#not working properly
-		#can use rege
-
 		titles = car.find('h2', attrs={"class": "su-post-title"})
 		titleText= titles.find('a').contents[0]
-		if any( x in titleText for x in ['BNR32', 'bnr32']):
-			#print('found')
+
+		if "bnr32" in titleText.lower():
 			dateAdded = car.find('div', attrs={"class": "su-post-meta"}).text
 			
-			#urls = titles.find('a',href=True).get('href')
 			#rewrite this part, cleaner to get just this url instead of all every time
 			urls = titles.find('a').attrs['href'].split()
 			for url in urls:
 				urlList.append(url)
-			year = getManufatureDate(url)
+			#need to test this on live site
+			year = getSubpageData(url)[1]
+			price = getSubpageData(url)[0]
 			carObject = {
 				"model": titleText,
 				"url": urls,
-				"year": year, 
+				"year": year,
+				"price": price,
 				"dateAdded": dateAdded.strip('\n\t').replace('Posted: ','')}
-			carArray.append(carObject)
+			
+			if filterResults:
+				if year <= MAX_YEAR and price <= MAX_PRICE:
+					carArray.append(carObject)
+			else:
+				carArray.append(carObject)
 
-			#need to add this inside for car loop
-			validUrls = [u for u in urlList if "bnr32" in u]
-			#print('Number of good URLS ',len(validUrls))
-			#print('total urls ',len(urlList))
-	
+
 		
 	#can delete this after debug
 	with open('urlList.txt', 'w') as f:
 		for item in urlList:
 			f.write(item)
-			f.write(', ')
+			f.write('\n')
 	
 	try:
 		with open('carList.json', 'w') as outfile:
