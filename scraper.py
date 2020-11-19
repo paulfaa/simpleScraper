@@ -1,5 +1,6 @@
 #python 3.8.4
 #need to run in virtual environment
+#cd to \test-env\Scripts and run activate.bat, then can run scraper.py
 #scrape tool using BeuatifulSoup and AWS lambda
 
 from bs4 import BeautifulSoup
@@ -12,6 +13,7 @@ def getManufatureDate(subUrl):
 	#for scraping date from subpage
 	subContent = BeautifulSoup(open("C:\\Users\\Paul\\kikakuSubpage.html",encoding="utf8"), "html.parser")
 	#uncomment below to connect to live site
+	#should add wait command so script doesnt look like ddos
 	# try:
 		# response = requests.get(subUrl, timeout = 5)
 		# subContent = BeautifulSoup(response.content, "html.parser")
@@ -44,6 +46,7 @@ def getData():
 	
 	for car in cars:
 		#not working properly
+		#can use regex here for better accuracy
 		if 'bnr32' or 'BNR32' in car.text(): 
 			#print('found')
 			dateAdded = car.find('div', attrs={"class": "su-post-meta"}).text
@@ -71,6 +74,7 @@ def getData():
 	with open('urlList.txt', 'w') as f:
 		for item in urlList:
 			f.write(item)
+			f.write(', ')
 	
 	try:
 		with open('carList.json', 'w') as outfile:
