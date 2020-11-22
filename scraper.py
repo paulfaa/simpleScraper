@@ -12,9 +12,10 @@ import random
 import re
 
 urlList = []
+
 url = 'https://trustplanning.world/used-car-inventory-list/'
 LOCAL_URL_PATH = "C:\\Users\\Paul\\kikaku.html"
-
+LOCAL_SUBURL_PATH = "C:\\Users\\Paul\\kikakuSubpage.html"
 MAX_PRICE = 2000000
 MAX_YEAR = 1991
 
@@ -24,10 +25,12 @@ useHostedSite = True
 def getSubpageData(subUrl):
 	#for scraping date from subpage
 	useHostedSite = False
+	time.sleep(random.randint(1, 4))
 	
-	if useHostedSite:
+	if useHostedSite == True:
 		try:	
-			time.sleep(random.randint(1, 4))
+			
+			#add headers here too
 			response = requests.get(subUrl)
 			subContent = BeautifulSoup(response.content, "html.parser")
 		except:
@@ -35,33 +38,34 @@ def getSubpageData(subUrl):
 	else:
 		subContent = BeautifulSoup(open("C:\\Users\\Paul\\kikakuSubpage.html",encoding="utf8"), "html.parser")
 	
-	
-	time.sleep(random.randint(1, 4))
-	response = requests.get(subUrl)
-	subContent = BeautifulSoup(response.content, "html.parser")
+	#response = requests.get(subUrl)
+	#subContent = BeautifulSoup(response.content, "html.parser")
 	
 	table = subContent.findAll('table', style={"width: 1395px; border-collapse: collapse;"})
 	for row in table:
 		price = re.sub('\D', '', row.findAll('h4')[6].text)
 		fullDate = row.findAll('h4')[1].text
 		date = fullDate[0:4]
-	return [price, date]
+		return [price, date]
+		#otherwise append each value to a list and return both lists
 
 def getData():
-	useHostedSite = False
+	useHostedSite == False
 	#set headers to stop request being identified as a bot
 	headers = requests.utils.default_headers()
 	headers.update({'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'})
 
-	if useHostedSite:
+	if useHostedSite == True:
 		try:
 			response = requests.get('https://trustplanning.world/used-car-inventory-list/', headers=headers)
 			content = BeautifulSoup(response.content, "html.parser")
 		except:
 			print("Connection failed - check URL")
 	else:
-		content = BeautifulSoup(open(LOCAL_URL_PATH,encoding="utf8"), "html.parser")
-	
+		print('use local site')
+		#content = BeautifulSoup(open(LOCAL_URL_PATH,encoding="utf8"), "html.parser")
+		
+	content = BeautifulSoup(open(LOCAL_URL_PATH,encoding="utf8"), "html.parser")
 	carArray = []	
 	cars = content.findAll('div', attrs={"class": "su-post"})
 	
@@ -92,6 +96,8 @@ def getData():
 			if filterResults:
 				if year <= MAX_YEAR and price <= MAX_PRICE:
 					carArray.append(carObject)
+				else:
+					print("No suitable cars found")
 			else:
 				carArray.append(carObject)
 
@@ -100,15 +106,24 @@ def getData():
 		for item in urlList:
 			f.write(item)
 			f.write('\n')
-	
-	try:
-		with open('carList.json', 'w') as outfile:
-			json.dump(carArray, outfile)
-	except:
-		print("Write to file failed")
+					
+	with open("C:\\Users\\Paul\\simpleScraper\\carList.json") as f:
+		data = json.load(f)
+		savedFileSize = len(data)
+	currentFileSize = len(carArray)
+
+	if currentFileSize > savedFileSize:
+		try:
+			#need to append only new values to json instead of rewriting each time
+			#could also output to csv instead
+			with open('carList.json', 'w') as outfile:
+				json.dump(carArray, outfile)
+		except:
+			print("Write to file failed")
 	
 		
 def parseData():
+	
 	t = datetime.now()
 	todayString = t.strftime("%Y-%m-%d")
 	carAdded = False
