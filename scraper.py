@@ -7,43 +7,61 @@ from bs4 import BeautifulSoup
 import requests
 import json
 from datetime import datetime
+import time
+import random
 import re
 
 urlList = []
 url = 'https://trustplanning.world/used-car-inventory-list/'
-filterResults = False
+LOCAL_URL_PATH = "C:\\Users\\Paul\\kikaku.html"
+
 MAX_PRICE = 2000000
 MAX_YEAR = 1991
 
+filterResults = False
+useHostedSite = True
+
 def getSubpageData(subUrl):
 	#for scraping date from subpage
-	subContent = BeautifulSoup(open("C:\\Users\\Paul\\kikakuSubpage.html",encoding="utf8"), "html.parser")
-	#uncomment below to connect to live site
-	#should add wait command so script doesnt look like ddos
-	# try:
-		# response = requests.get(subUrl, timeout = 5)
-		# subContent = BeautifulSoup(response.content, "html.parser")
-	# except:
-		# print("Connection failed - check URL")
+	useHostedSite = False
+	
+	if useHostedSite:
+		try:	
+			time.sleep(random.randint(1, 4))
+			response = requests.get(subUrl)
+			subContent = BeautifulSoup(response.content, "html.parser")
+		except:
+			print("Connection failed - check connection")
+	else:
+		subContent = BeautifulSoup(open("C:\\Users\\Paul\\kikakuSubpage.html",encoding="utf8"), "html.parser")
+	
+	
+	time.sleep(random.randint(1, 4))
+	response = requests.get(subUrl)
+	subContent = BeautifulSoup(response.content, "html.parser")
+	
 	table = subContent.findAll('table', style={"width: 1395px; border-collapse: collapse;"})
 	for row in table:
 		price = re.sub('\D', '', row.findAll('h4')[6].text)
 		fullDate = row.findAll('h4')[1].text
 		date = fullDate[0:4]
-	print(price)
 	return [price, date]
 
 def getData():
-	localUrl = "C:\\Users\\Paul\\kikaku.html"
-	content = BeautifulSoup(open("C:\\Users\\Paul\\kikaku.html",encoding="utf8"), "html.parser")
+	useHostedSite = False
+	#set headers to stop request being identified as a bot
+	headers = requests.utils.default_headers()
+	headers.update({'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'})
+
+	if useHostedSite:
+		try:
+			response = requests.get('https://trustplanning.world/used-car-inventory-list/', headers=headers)
+			content = BeautifulSoup(response.content, "html.parser")
+		except:
+			print("Connection failed - check URL")
+	else:
+		content = BeautifulSoup(open(LOCAL_URL_PATH,encoding="utf8"), "html.parser")
 	
-	#code uncomment below to connect to live website
-	# try:
-		# response = requests.get(url, timeout = 5)
-		# content = BeautifulSoup(response.content, "html.parser")
-	# except:
-		# print("Connection failed - check URL")
-		
 	carArray = []	
 	cars = content.findAll('div', attrs={"class": "su-post"})
 	
@@ -58,9 +76,12 @@ def getData():
 			urls = titles.find('a').attrs['href'].split()
 			for url in urls:
 				urlList.append(url)
-			#need to test this on live site
-			year = getSubpageData(url)[1]
-			price = getSubpageData(url)[0]
+			print("Subpage url is: ",url)
+			subPageData = getSubpageData(url)
+			print(subPageData[1])
+			print(subPageData[0])
+			price = subPageData[0]
+			year = subPageData[1]
 			carObject = {
 				"model": titleText,
 				"url": urls,
@@ -74,8 +95,6 @@ def getData():
 			else:
 				carArray.append(carObject)
 
-
-		
 	#can delete this after debug
 	with open('urlList.txt', 'w') as f:
 		for item in urlList:
