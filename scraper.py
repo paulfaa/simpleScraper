@@ -33,7 +33,6 @@ def getSubpageData(subUrl):
 	
 	if useHostedSite == True:
 		try:	
-			
 			#add headers here too
 			response = requests.get(subUrl)
 			subContent = BeautifulSoup(response.content, "html.parser")
@@ -52,9 +51,17 @@ def getSubpageData(subUrl):
 		date = fullDate[0:4]
 		return [price, date]
 		#otherwise append each value to a list and return both lists
-
+		
+def CheckIfMatchesFilters(car):
+	if car.year <= MAX_YEAR and car.price <= MAX_PRICE:
+		return True
+	else:
+		print("No suitable cars found")
+	
 def getData():
 	useHostedSite == False
+	LOCAL_URL_PATH = "C:\\Users\\Paul\\kikaku.html"
+	
 	#set headers to stop request being identified as a bot
 	headers = requests.utils.default_headers()
 	headers.update({'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'})
@@ -66,10 +73,10 @@ def getData():
 		except:
 			print("Connection failed - check URL")
 	else:
-		print('use local site')
-		#content = BeautifulSoup(open(LOCAL_URL_PATH,encoding="utf8"), "html.parser")
-		
-	content = BeautifulSoup(open(LOCAL_URL_PATH,encoding="utf8"), "html.parser")
+		print('using local site')
+		print('LOCALURL', LOCAL_URL_PATH)
+		content = BeautifulSoup(open(LOCAL_URL_PATH,encoding="utf8"), "html.parser")
+
 	carArray = []	
 	cars = content.findAll('div', attrs={"class": "su-post"})
 	
@@ -85,27 +92,29 @@ def getData():
 			for url in urls:
 				urlList.append(url)
 			print("Subpage url is: ",url)
-			subPageData = getSubpageData(url)
-			print(subPageData[1])
-			print(subPageData[0])
-			price = subPageData[0]
-			year = subPageData[1]
-			carObject = {
-				"model": titleText,
-				"url": urls,
-				"year": year,
-				"price": price,
-				"dateAdded": dateAdded.strip('\n\t').replace('Posted: ','')}
-			
-			if filterResults:
-				if year <= MAX_YEAR and price <= MAX_PRICE:
-					carArray.append(carObject)
-				else:
-					print("No suitable cars found")
+			if checkUrlIsNew(url) == False:
+				break
+				#continue may be better option than break
 			else:
-				carArray.append(carObject)
+				subPageData = getSubpageData(url)
+				print(subPageData[1])
+				print(subPageData[0])
+				price = subPageData[0]
+				year = subPageData[1]
+				carObject = {
+					"model": titleText,
+					"url": urls,
+					"year": year,
+					"price": price,
+					"dateAdded": dateAdded.strip('\n\t').replace('Posted: ','')}
+				
+				if filterResults:
+					if filterCar(carObject) == False:
+						break
+				else:
+					carArray.append(carObject)
 
-	#can delete this after debug
+	#store a list of all scraped urls
 	with open('urlList.txt', 'w') as f:
 		for item in urlList:
 			f.write(item)
@@ -124,18 +133,15 @@ def getData():
 				json.dump(carArray, outfile)
 		except:
 			print("Write to file failed")
-	
 
-def checkUrl(url):
+def checkUrlIsNew(url):
 	print('Checking url ',url)
-	savedUrls = []
 	try:
 		with open ("C:\\Users\\Paul\\simpleScraper\\urlList.txt", "r") as u:
 			content = u.read()
 	except:
 		print("Read urlList failed, check file exists")
-		
-		
+
 	if url in content:
 		print('Url already scraped')
 		return False
@@ -145,7 +151,6 @@ def checkUrl(url):
 	u.close()
 		
 def parseData():
-	
 	t = datetime.now()
 	todayString = t.strftime("%Y-%m-%d")
 	carAdded = False
@@ -174,8 +179,5 @@ def parseData():
 # if __name__ == "__main__":
     # main()
 	
-#getData()
+getData()
 #parseData()
-checkUrl('https://trustplanning.world/usedcar1/%e3%80%904949%e3%80%91nissan-skyline-gt-r-bnr32/')
-checkUrl('https://trustplanning.world/usedcar1/%e3%80%905182%e3%80%91nissan-skyline-gt-r-bnr32/')
-
