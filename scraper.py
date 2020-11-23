@@ -22,6 +22,10 @@ MAX_YEAR = 1991
 filterResults = False
 useHostedSite = True
 
+
+#rewrite to pull saved list of urls and only
+#scrape new urls not saved on list to save bandwith
+
 def getSubpageData(subUrl):
 	#for scraping date from subpage
 	useHostedSite = False
@@ -121,6 +125,24 @@ def getData():
 		except:
 			print("Write to file failed")
 	
+
+def checkUrl(url):
+	print('Checking url ',url)
+	savedUrls = []
+	try:
+		with open ("C:\\Users\\Paul\\simpleScraper\\urlList.txt", "r") as u:
+			content = u.read()
+	except:
+		print("Read urlList failed, check file exists")
+		
+		
+	if url in content:
+		print('Url already scraped')
+		return False
+	else:
+		print('New url, ok to scrape')
+		return True
+	u.close()
 		
 def parseData():
 	
@@ -152,5 +174,8 @@ def parseData():
 # if __name__ == "__main__":
     # main()
 	
-getData()
+#getData()
 #parseData()
+checkUrl('https://trustplanning.world/usedcar1/%e3%80%904949%e3%80%91nissan-skyline-gt-r-bnr32/')
+checkUrl('https://trustplanning.world/usedcar1/%e3%80%905182%e3%80%91nissan-skyline-gt-r-bnr32/')
+
