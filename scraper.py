@@ -23,9 +23,6 @@ filterResults = False
 useHostedSite = True
 
 
-#rewrite to pull saved list of urls and only
-#scrape new urls not saved on list to save bandwith
-
 def getSubpageData(subUrl):
 	#for scraping date from subpage
 	useHostedSite = False
@@ -58,6 +55,7 @@ def CheckIfMatchesFilters(car):
 	else:
 		print("No suitable cars found")
 	
+	#can split this into 2 different functions
 def getData():
 	useHostedSite == False
 	LOCAL_URL_PATH = "C:\\Users\\Paul\\kikaku.html"
@@ -110,7 +108,8 @@ def getData():
 				
 				if filterResults:
 					if filterCar(carObject) == False:
-						break
+						#break
+						pass
 				else:
 					carArray.append(carObject)
 
