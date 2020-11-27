@@ -41,7 +41,13 @@
         var table = $('#table');
         $('#table').bootstrapTable({data: myObj});
         
-
+        var max;
+        for (var i=0 ; i<myObj.length ; i++) {
+          if (max == null || parseInt(myObj[i][price]) > parseInt(max[price]))
+          max = myObj[i];
+        }
+        document.getElementById("maxPrice").innerHTML = max;
+        
 
 
       }
@@ -79,8 +85,25 @@
 
 
     <div>Average price</div>
-    <div>Max price</div>
+    <div>Max price
+      <p id="maxPrice"></p>
+    </div>
     <div>Minimum price</div>
     <div>Total cars scraped</div>
+    <div>Time until next scrape:
+      <p id="timer"></p>
+      <script>
+        var countDownDate = new Date("Nov 28, 2020 15:37:25").getTime();
+        var x = setInterval(function() {
+          var now = new Date().getTime();
+          var distance = countDownDate - now;
+          var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+          var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+          document.getElementById("timer").innerHTML = hours + "h "
+          + minutes + "m " + seconds + "s ";
+        });
+      </script>
+    </div>
   </body>
 </html>
