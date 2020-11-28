@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <!-- npm i http-server -g, http-server-->
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -40,6 +41,9 @@
         //extra code
         var table = $('#table');
         $('#table').bootstrapTable({data: myObj});
+
+        var countKey = Object.keys(myObj).length;
+        document.getElementById("totalCars").innerHTML = countKey;
         
         var max;
         for (var i=0 ; i<myObj.length ; i++) {
@@ -69,7 +73,7 @@
     </script>
 
     <div class="container">
-      <div class="row">
+      <div class="row"></div>
         <table id="table">
           <thead>
             <tr class="info">
@@ -89,14 +93,30 @@
       <p id="maxPrice"></p>
     </div>
     <div>Minimum price</div>
-    <div>Total cars scraped</div>
+    <div>Total cars scraped
+      <p id="totalCars"></p>
+    </div>
     <div>Time until next scrape:
       <p id="timer"></p>
       <script>
-        var countDownDate = new Date("Nov 28, 2020 15:37:25").getTime();
+        var countDownDate = new Date("Nov 29, 2020 15:37:25").getTime();
         var x = setInterval(function() {
           var now = new Date().getTime();
-          var distance = countDownDate - now;
+          var today = new Date();
+          var formattedToday = new Date(1606665221776);
+          var tomorrow = today.setDate(today.getDate() + 1);
+          var targetDate;
+          if(today.getHours() < 15){
+            targetDate = today.setHours(15);
+            var targetTime = targetDate.getTime();
+            console.log(targetTime);
+            //targetDate = new Date(today.setHours(15));
+          }
+          else{
+            targetDate = new Date(tomorrow.setHours(15));
+          }
+          var distance = targetDate - now;
+          console.log(distance);
           var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
           var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
           var seconds = Math.floor((distance % (1000 * 60)) / 1000);
