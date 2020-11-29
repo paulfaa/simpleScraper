@@ -24,19 +24,12 @@
 
     <script>
     var obj, dbParam, xmlhttp, myObj, x, txt = "";
-    obj = { table: "customers", limit: 20 };
     dbParam = JSON.stringify(obj);
     xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
         myObj = JSON.parse(this.responseText);
-        console.log(myObj)
-        txt += "<table border='1'>"
-        for (x in myObj) {
-          txt += "<tr><td>" + myObj[x].model + "<td>" + myObj[x].year + "</td>" + "<td>" + "¥" + myObj[x].price + "</td>"+ "</td></tr>";
-        }
-        txt += "</table>"    
-        document.getElementById("content").innerHTML = txt;
+        
 
         //extra code
         var table = $('#table');
@@ -46,11 +39,48 @@
         document.getElementById("totalCars").innerHTML = countKey;
         
         var max;
-        for (var i=0 ; i<myObj.length ; i++) {
-          if (max == null || parseInt(myObj[i][price]) > parseInt(max[price]))
-          max = myObj[i];
+        //for (var i=0 ; i<myObj.length ; i++) {
+        //  if (max == null || parseInt(myObj[i][price]) > parseInt(max[price]))
+        //  max = myObj[i];
+        //}
+        
+        var prices = []
+        for(var i in myObj){
+          prices.push(myObj[i].price);
         }
-        document.getElementById("maxPrice").innerHTML = max;
+        var maxPrice = prices.reduce(function(a, b){
+          return Math.max(a, b);
+        });
+        var minPrice = prices.reduce(function(a, b){
+          return Math.min(a, b);
+        });
+        var otherMin = Math.min.apply(null, prices);
+        console.log(maxPrice);
+        console.log(minPrice);
+        console.log(otherMin);
+
+        document.getElementById("maxPrice").innerHTML = maxPrice;
+        document.getElementById("minPrice").innerHTML = minPrice;
+
+        var sum = prices.reduce(function(a, b){
+          return a + b;
+        }, 0);
+        const avg = (sum / prices.length) || 0;
+
+        var total = 0;
+        for (var i  = 0; i < prices.length; i++){
+        total = +total + prices[i];
+        }
+        console.log(total);
+        var newAvg = total / prices.length;
+
+        var roundedDown = Math.floor(avg)
+        console.log(newAvg);
+        document.getElementById("avgPrice").innerHTML = roundedDown;
+
+        //var maxPrice = Math.max(parsedArray.map(o => o.price), 0);
+        //console.log(maxPrice);
+        //document.getElementById("maxPrice").innerHTML = maxPrice;
         
 
 
@@ -59,7 +89,6 @@
     var jsonStuff = xmlhttp.open("GET", "carList.json", true);
     xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xmlhttp.send("x=" + dbParam);
-    console.log(jsonStuff);
 
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
@@ -88,11 +117,14 @@
     </div>
 
 
-    <div>Average price</div>
+    <div>Average price
+      <p id="avgPrice"></p>
+    </div>
     <div>Max price
       <p id="maxPrice"></p>
     </div>
     <div>Minimum price</div>
+      <p id="minPrice"></p>
     <div>Total cars scraped
       <p id="totalCars"></p>
     </div>
