@@ -5,21 +5,19 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-
+    <!-- <link rel="stylesheet" href="resultsPage.css"> -->
     <title>Scrape results</title>
   </head>
+
   <body>
-    <h1>Scrape results</h1>
-    
-    <script
-  src="https://code.jquery.com/jquery-3.5.1.js"
-  integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
-  crossorigin="anonymous"></script>
+    <h1 style="background-color: rgb(144, 47, 255)">Scrape results</h1>
+  
+    <script src="resultsPage.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
     <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
     <script src="https://unpkg.com/bootstrap-table@1.14.2/dist/bootstrap-table.min.js"></script>
-    <script src="resultsPage.js"></script>
+    
     <p id="content"></p>
 
     <script>
@@ -43,16 +41,10 @@
         for(var i in myObj){
           prices.push(myObj[i].price);
         }
-        var maxPrice = prices.reduce(function(a, b){
-          return Math.max(a, b);
-        });
-        var minPrice = prices.reduce(function(a, b){
-          return Math.min(a, b);
-        });
-        var otherMin = Math.min.apply(null, prices);
+        var maxPrice = Math.max.apply(null, prices);
+        var minPrice = Math.min.apply(null, prices);
         console.log(maxPrice);
         console.log(minPrice);
-        console.log(otherMin);
 
         document.getElementById("maxPrice").innerHTML = maxPrice;
         document.getElementById("minPrice").innerHTML = minPrice;
@@ -60,19 +52,20 @@
         var avg2 = prices.reduce((p,c,_,a) => p + c/a.length,0);
         console.log(avg2)
         document.getElementById("avgPrice").innerHTML = avg2;
-
-
-        
-        
-
       }
     };
+
+    /* $(document).ready(function () {
+    $('#table').DataTable();
+    $('.dataTables_length').addClass('bs-select');
+    }); */
 
 
     var jsonStuff = xmlhttp.open("GET", "carList.json", true);
     xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xmlhttp.send("x=" + dbParam);
-
+    console.log("Json stuff: ");
+    console.log(jsonStuff);
     var xmlhttp = new XMLHttpRequest();
     xmlhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
@@ -80,37 +73,46 @@
       var jsonData = JSON.parse(myObj);
       console.log(jsonData);
     }
+    
     }
 
     </script>
 
-    <div class="container">
-      <div class="row"></div>
-        <table id="table">
-          <thead>
-            <tr class="info">
+    <div onload= "resultsPage.js" class="container">
+        <table id="table" class="table-striped">
+          <thead class="thead-dark">
+            <tr>
               <th data-field="model">Model</th>
               <th data-field="year">Year</th>
               <th data-field="price">Price</th>
               <th data-field="dateAdded">Date added</th>
             </tr>
-          <thead>
         </table>
+    </div>
+
+    
+    <div class="container">
+      <div class="row">
+        <div class="col">Average price
+          <p id="avgPrice"></p>
+        </div>
+        <div class="col">Max price
+          <p id="maxPrice"></p>
+        </div>
+        <div class="col">Minimum price
+          <p id="minPrice"></p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">Total cars scraped
+          <p id="totalCars"></p>
+        </div>
+        <div class="col">Last update on
+          <p id="lastUpdate"></p>
+        </div>
       </div>
     </div>
 
-
-    <div>Average price
-      <p id="avgPrice"></p>
-    </div>
-    <div>Max price
-      <p id="maxPrice"></p>
-    </div>
-    <div>Minimum price</div>
-      <p id="minPrice"></p>
-    <div>Total cars scraped
-      <p id="totalCars"></p>
-    </div>
     <div>Time until next scrape:
       <p id="timer"></p>
       <script>
