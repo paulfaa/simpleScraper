@@ -29,20 +29,15 @@
     xmlhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
         myObj = JSON.parse(this.responseText);
-        
 
         //extra code
         var table = $('#table');
         $('#table').bootstrapTable({data: myObj});
+        //need to enable sorting on table
+        
 
         var countKey = Object.keys(myObj).length;
         document.getElementById("totalCars").innerHTML = countKey;
-        
-        var max;
-        //for (var i=0 ; i<myObj.length ; i++) {
-        //  if (max == null || parseInt(myObj[i][price]) > parseInt(max[price]))
-        //  max = myObj[i];
-        //}
         
         var prices = []
         for(var i in myObj){
@@ -62,30 +57,18 @@
         document.getElementById("maxPrice").innerHTML = maxPrice;
         document.getElementById("minPrice").innerHTML = minPrice;
 
-        var sum = prices.reduce(function(a, b){
-          return a + b;
-        }, 0);
-        const avg = (sum / prices.length) || 0;
+        var avg2 = prices.reduce((p,c,_,a) => p + c/a.length,0);
+        console.log(avg2)
+        document.getElementById("avgPrice").innerHTML = avg2;
 
-        var total = 0;
-        for (var i  = 0; i < prices.length; i++){
-        total = +total + prices[i];
-        }
-        console.log(total);
-        var newAvg = total / prices.length;
 
-        var roundedDown = Math.floor(avg)
-        console.log(newAvg);
-        document.getElementById("avgPrice").innerHTML = roundedDown;
-
-        //var maxPrice = Math.max(parsedArray.map(o => o.price), 0);
-        //console.log(maxPrice);
-        //document.getElementById("maxPrice").innerHTML = maxPrice;
         
-
+        
 
       }
     };
+
+
     var jsonStuff = xmlhttp.open("GET", "carList.json", true);
     xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xmlhttp.send("x=" + dbParam);
