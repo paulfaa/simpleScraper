@@ -16,6 +16,7 @@ urlList = []
 url = 'https://trustplanning.world/used-car-inventory-list/'
 LOCAL_URL_PATH = "C:\\Users\\Paul\\kikaku.html"
 LOCAL_SUBURL_PATH = "C:\\Users\\Paul\\kikakuSubpage.html"
+WORKING_DIRECTORY = "C:\\Users\\paulf\\Documents\\Code\\simpleScraper
 MAX_PRICE = 2000000
 MAX_YEAR = 1991
 
@@ -31,7 +32,9 @@ def getSubpageData(subUrl):
 	if useHostedSite == True:
 		try:	
 			#add headers here too
-			response = requests.get(subUrl)
+			headers = requests.utils.default_headers()
+			headers.update({'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'})
+			response = requests.get(subUrl, headers=headers)
 			subContent = BeautifulSoup(response.content, "html.parser")
 		except:
 			print("Connection failed - check connection")
@@ -80,6 +83,7 @@ def getData():
 	
 	for car in cars:
 		titles = car.find('h2', attrs={"class": "su-post-title"})
+		#need to filter this futher, unicode chars like \u30105181 \u3011 are being saved to JSON
 		titleText= titles.find('a').contents[0]
 
 		if "bnr32" in titleText.lower():
@@ -101,6 +105,7 @@ def getData():
 				year = subPageData[1]
 				carObject = {
 					"model": titleText,
+					#url is getting saved as an array - should be single string
 					"url": urls,
 					"year": year,
 					"price": price,
@@ -119,7 +124,7 @@ def getData():
 			f.write(item)
 			f.write('\n')
 					
-	with open("C:\\Users\\Paul\\simpleScraper\\carList.json") as f:
+	with open(WORKING_DIRECTORY + "\\carList.json") as f:
 		data = json.load(f)
 		savedFileSize = len(data)
 	currentFileSize = len(carArray)
@@ -127,7 +132,7 @@ def getData():
 	if currentFileSize > savedFileSize:
 		try:
 			#need to append only new values to json instead of rewriting each time
-			#could also output to csv instead
+			#check if json to be written already exists
 			with open('carList.json', 'w') as outfile:
 				json.dump(carArray, outfile)
 		except:
@@ -136,7 +141,7 @@ def getData():
 def checkUrlIsNew(url):
 	print('Checking url ',url)
 	try:
-		with open ("C:\\Users\\Paul\\simpleScraper\\urlList.txt", "r") as u:
+		with open (WORKING_DIRECTORY + "\\urlList.txt", "r") as u:
 			content = u.read()
 	except:
 		print("Read urlList failed, check file exists")

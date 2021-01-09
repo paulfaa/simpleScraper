@@ -1,11 +1,35 @@
 window.addEventListener('load', (event) => {
   console.log('page is fully loaded');
-  var json_data = monoFunction();
-  updateValues(json_data);
+  getJson();
+  //monoFunction();
 });
 
-function testFunc() {
-  console.log("Test message");
+function getJson() {
+  var $table = $('#table');
+  var myData = $.getJSON("carList.json").done(function (jsonData) {
+    updateValues(jsonData);
+    $('#table').bootstrapTable({data: jsonData});
+    //return jsonData
+  });
+  
+
+  console.log(myData);
+  updateValues(jsonData);
+  $('#table').bootstrapTable({data: jsonData});
+  //$(table).bootstrapTable({ data: myData });
+}
+
+function importJSON() {
+  var data = fetch("./carList.json")
+    .then(response => response.json())
+    .then(data => console.log(data));
+  return data;
+}
+
+function createTable() {
+  var jsonFile = importJSON();
+  var table = $('#table');
+  $('#table').bootstrapTable({ data: jsonFile });
 }
 
 function monoFunction() {
@@ -15,18 +39,19 @@ function monoFunction() {
   xmlhttp.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
       myObj = JSON.parse(this.responseText);
+      console.log(myObj);
+
       //extra code
       var table = $('#table');
       $('#table').bootstrapTable({ data: myObj });
       //need to enable sorting on table
-
-      return myObj;
     }
   };
   //cant access outside of function
   console.log(myObj);
 
   //var jsonStuff = xmlhttp.open("GET", "carList.json", true);
+  xmlhttp.open(this.method, this.url, true);
   xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   xmlhttp.send("x=" + dbParam);
   //jsonStuff returns null
@@ -38,7 +63,6 @@ function monoFunction() {
       var jsonData = JSON.parse(myObj);
       console.log(jsonData);
     }
-
   }
 }
 
@@ -50,6 +74,7 @@ function updateValues(myObj) {
   for (var i in myObj) {
     prices.push(myObj[i].price);
   }
+  console.log(prices);
   var maxPrice = Math.max.apply(null, prices);
   var minPrice = Math.min.apply(null, prices);
   console.log(maxPrice);
