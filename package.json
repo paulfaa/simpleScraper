@@ -1,0 +1,29 @@
+{
+  "name": "simplescraper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "resultsPage.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "bootstrap": "^4.5.3",
+    "express": "^4.17.1",
+    "jquery": "^1.9.1",
+    "qunit": "^2.13.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paulfaa/simpleScraper.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/paulfaa/simpleScraper/issues"
+  },
+  "homepage": "https://github.com/paulfaa/simpleScraper#readme"
+}

@@ -9,13 +9,12 @@ function getJson() {
   var myData = $.getJSON("carList.json").done(function (jsonData) {
     updateValues(jsonData);
     $('#table').bootstrapTable({data: jsonData});
-    //return jsonData
   });
   
 
   console.log(myData);
-  updateValues(jsonData);
-  $('#table').bootstrapTable({data: jsonData});
+  //updateValues(jsonData);
+  //$('#table').bootstrapTable({data: jsonData});
   //$(table).bootstrapTable({ data: myData });
 }
 
@@ -114,25 +113,4 @@ function scrapeTimer() {
       + minutes + "m " + seconds + "s ";
   });
 }
-
-/**
-var $table = $('#table');
-var myData = $.getJSON("carList.json")
-$('#table').Datatable('load', myData);
-$(function makeTable() {
-    $('#table').bootstrapTable({
-        data: mydata
-    });
-});
-document.onload.makeTable()
-*/
-/* var xmlhttp = new XMLHttpRequest();
-xmlhttp.onreadystatechange = function() {
-  if (this.readyState == 4 && this.status == 200) {
-    var myObj = JSON.parse(this.responseText);
-    var jsonData = JSON.parse(myObj);
-    console.log(jsonData);
-  }
-}
- */
 
