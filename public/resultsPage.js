@@ -1,3 +1,6 @@
+var jsonData;
+//need to serve \node_modules\bootstrap\dist\js to stop 404 error
+
 window.addEventListener('load', (event) => {
   console.log('page is fully loaded');
   getJson();
@@ -31,49 +34,23 @@ function createTable() {
   $('#table').bootstrapTable({ data: jsonFile });
 }
 
-function monoFunction() {
-  var obj, dbParam, xmlhttp, myObj, x, txt = "";
-  dbParam = JSON.stringify(obj);
-  xmlhttp = new XMLHttpRequest();
-  xmlhttp.onreadystatechange = function () {
-    if (this.readyState == 4 && this.status == 200) {
-      myObj = JSON.parse(this.responseText);
-      console.log(myObj);
-
-      //extra code
-      var table = $('#table');
-      $('#table').bootstrapTable({ data: myObj });
-      //need to enable sorting on table
-    }
-  };
-  //cant access outside of function
-  console.log(myObj);
-
-  //var jsonStuff = xmlhttp.open("GET", "carList.json", true);
-  xmlhttp.open(this.method, this.url, true);
-  xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-  xmlhttp.send("x=" + dbParam);
-  //jsonStuff returns null
-
-  var xmlhttp = new XMLHttpRequest();
-  xmlhttp.onreadystatechange = function () {
-    if (this.readyState == 4 && this.status == 200) {
-      var myObj = JSON.parse(this.responseText);
-      var jsonData = JSON.parse(myObj);
-      console.log(jsonData);
-    }
-  }
-}
-
 function updateValues(myObj) {
   var countKey = Object.keys(myObj).length;
   document.getElementById("totalCars").innerHTML = countKey;
+
+  var dates = []
+  for (var i in myObj) {
+    dates.push(myObj[i].dateAdded);
+  }
+  var dates = dates.map(function(x) { return new Date(x); })
+  var lastUpdate = new Date(Math.max.apply(null,dates));
+  document.getElementById("lastUpdate").innerHTML = lastUpdate.toISOString().slice(0,10);;
 
   var prices = []
   for (var i in myObj) {
     prices.push(myObj[i].price);
   }
-  console.log(prices);
+  //console.log(prices);
   var maxPrice = Math.max.apply(null, prices);
   var minPrice = Math.min.apply(null, prices);
   console.log(maxPrice);
