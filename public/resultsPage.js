@@ -1,10 +1,17 @@
-var jsonData;
+//todo
 //need to serve \node_modules\bootstrap\dist\js to stop 404 error
+//add yen symbol to table
+//make table sortable by header
+//fix countdown timer
+//add scrape now button
+
+
+var jsonData;
 
 window.addEventListener('load', (event) => {
   console.log('page is fully loaded');
   getJson();
-  //monoFunction();
+  //scrapeTimer();
 });
 
 function getJson() {
@@ -13,9 +20,6 @@ function getJson() {
     updateValues(jsonData);
     $('#table').bootstrapTable({data: jsonData});
   });
-  
-
-  console.log(myData);
   //updateValues(jsonData);
   //$('#table').bootstrapTable({data: jsonData});
   //$(table).bootstrapTable({ data: myData });
@@ -28,50 +32,61 @@ function importJSON() {
   return data;
 }
 
-function createTable() {
+function priceFormatter(value, row, index) {
+  return "¥" + row.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+/* function createTable() {
   var jsonFile = importJSON();
   var table = $('#table');
   $('#table').bootstrapTable({ data: jsonFile });
-}
+} */
 
 function updateValues(myObj) {
   var countKey = Object.keys(myObj).length;
   document.getElementById("totalCars").innerHTML = countKey;
 
-  var dates = []
+  function updateDates(){
+    var dates = []
   for (var i in myObj) {
     dates.push(myObj[i].dateAdded);
   }
   var dates = dates.map(function(x) { return new Date(x); })
   var lastUpdate = new Date(Math.max.apply(null,dates));
   document.getElementById("lastUpdate").innerHTML = lastUpdate.toISOString().slice(0,10);;
-
-  var prices = []
-  for (var i in myObj) {
-    prices.push(myObj[i].price);
   }
-  //console.log(prices);
-  var maxPrice = Math.max.apply(null, prices);
-  var minPrice = Math.min.apply(null, prices);
-  console.log(maxPrice);
-  console.log(minPrice);
+  
+  function updatePrices(){
+    var prices = []
+    for (var i in myObj) {
+      prices.push(myObj[i].price);
+    }
+    //console.log(prices);
+    var maxPrice = Math.max.apply(null, prices);
+    var minPrice = Math.min.apply(null, prices);
 
-  document.getElementById("maxPrice").innerHTML = maxPrice;
-  document.getElementById("minPrice").innerHTML = minPrice;
+    document.getElementById("maxPrice").innerHTML = maxPrice;
+    document.getElementById("minPrice").innerHTML = minPrice;
 
-  var avg2 = prices.reduce((p, c, _, a) => p + c / a.length, 0);
-  console.log(avg2)
-  document.getElementById("avgPrice").innerHTML = avg2;
+    var avg2 = prices.reduce((p, c, _, a) => p + c / a.length, 0);
+    console.log(avg2)
+    document.getElementById("avgPrice").innerHTML = avg2;
+  }
+
+  updateDates();
+  updatePrices();
 }
 
 function scrapeTimer() {
-  var countDownDate = new Date("Nov 29, 2020 15:37:25").getTime();
+  //var countDownDate = new Date("Nov 29, 2020 15:37:25").getTime();
+  var countDownDate = new Date("Jan 12, 2021 15:37:25").getTime();
   var x = setInterval(function () {
     var now = new Date().getTime();
     var today = new Date();
     var formattedToday = new Date(1606665221776);
-    var tomorrow = today.setDate(today.getDate() + 1);
-    var targetDate;
+    var tomorrow = new Date(today.getTime()+1000*60*60*24);
+    //var tomorrow = today.setDate(today.getDate() + 1);
+    var targetDate = new Date();
     if (today.getHours() < 15) {
       targetDate = today.setHours(15);
       var targetTime = targetDate.getTime();
