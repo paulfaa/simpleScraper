@@ -1,10 +1,8 @@
 //todo
 //need to serve \node_modules\bootstrap\dist\js to stop 404 error
-//add yen symbol to table
-//make table sortable by header
+//sorting works, add arrow to table being sorted
 //fix countdown timer
 //add scrape now button
-
 
 var jsonData;
 
@@ -25,15 +23,21 @@ function getJson() {
   //$(table).bootstrapTable({ data: myData });
 }
 
-function importJSON() {
+/* function importJSON() {
   var data = fetch("./carList.json")
     .then(response => response.json())
     .then(data => console.log(data));
   return data;
-}
+} */
 
 function priceFormatter(value, row, index) {
   return "¥" + row.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function urlFormatter(value, row, index) {
+  var linkText = row.model;
+  var link = row.url[0]; //this should be changed from array to string
+  return "<a href='"+link+"'>"+linkText+"</a>";
 }
 
 /* function createTable() {
