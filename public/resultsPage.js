@@ -1,7 +1,6 @@
 //todo
 //need to serve \node_modules\bootstrap\dist\js to stop 404 error
 //sorting works, add arrow to table being sorted
-//fix countdown timer
 //add scrape now button
 
 var jsonData;
@@ -65,16 +64,16 @@ function updateValues(myObj) {
     for (var i in myObj) {
       prices.push(myObj[i].price);
     }
-    //console.log(prices);
+
     var maxPrice = Math.max.apply(null, prices);
     var minPrice = Math.min.apply(null, prices);
 
     document.getElementById("maxPrice").innerHTML = maxPrice;
     document.getElementById("minPrice").innerHTML = minPrice;
 
-    var avg2 = prices.reduce((p, c, _, a) => p + c / a.length, 0);
-    console.log(avg2)
-    document.getElementById("avgPrice").innerHTML = avg2;
+    var avg = prices.reduce((p, c, _, a) => p + c / a.length, 0);
+    console.log(avg)
+    document.getElementById("avgPrice").innerHTML = avg;
   }
 
   updateDates();
@@ -88,11 +87,10 @@ function scrapeTimer(){
     var today = new Date();
     var tomorrow = new Date(today.getTime() + 1000*60*60*24);
     if (today.getHours() < 15) {
-      countDownDate = new Date(today.setHours(15)).getTime();
+      countDownDate = new Date(today.setHours(15)).getTime(); //should also set minutes using today.getMinutes()
     }
     else if (today.getHours() > 15){
       countDownDate = new Date(tomorrow.setHours(15)).getTime();
-      console.log("should only log once")
     }
     return countDownDate;
   }

@@ -1,7 +1,11 @@
 #python 3.8.4
 #need to run in virtual environment
 #cd to \test-env\Scripts and run activate.bat, then can run scraper.py
-#scrape tool using BeuatifulSoup and AWS lambda
+#scrape tool using BeautifulSoup and AWS lambda
+
+#need to rewrite scraper since website was redesigned
+#now has built in search function which might be easier
+#need to install boto3 for interacting with s3
 
 from bs4 import BeautifulSoup
 import requests
@@ -15,6 +19,7 @@ urlList = []
 
 url = 'https://trustplanning.world/used-car-inventory-list/'
 LOCAL_URL_PATH = "C:\\Users\\Paul\\kikaku.html"
+S3_URL_PATH = ""
 LOCAL_SUBURL_PATH = "C:\\Users\\Paul\\kikakuSubpage.html"
 WORKING_DIRECTORY = "C:\\Users\\paulf\\Documents\\Code\\simpleScraper
 MAX_PRICE = 2000000
@@ -25,13 +30,12 @@ useHostedSite = True
 
 
 def getSubpageData(subUrl):
-	#for scraping date from subpage
+	#can now get year and price from website without having to scrape subpage
 	useHostedSite = False
 	time.sleep(random.randint(1, 4))
 	
 	if useHostedSite == True:
 		try:	
-			#add headers here too
 			headers = requests.utils.default_headers()
 			headers.update({'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'})
 			response = requests.get(subUrl, headers=headers)
@@ -46,7 +50,9 @@ def getSubpageData(subUrl):
 	
 	table = subContent.findAll('table', style={"width: 1395px; border-collapse: collapse;"})
 	for row in table:
+		#price is inside 2nd <p> class = table_content object which is inside 2nd <li> object 
 		price = re.sub('\D', '', row.findAll('h4')[6].text)
+		#date is inside 2nd <p> class = table_content object which is inside 4th <li> object 
 		fullDate = row.findAll('h4')[1].text
 		date = fullDate[0:4]
 		return [price, date]
@@ -69,7 +75,9 @@ def getData():
 
 	if useHostedSite == True:
 		try:
-			response = requests.get('https://trustplanning.world/used-car-inventory-list/', headers=headers)
+			#old link form before site had search function
+			#response = requests.get('https://trustplanning.world/used-car-inventory-list/', headers=headers)
+			response = requests.get('https://trustplanning.world/used-car-inventory-list/?maker=nissan&vehicle_type=skyline-gt-r', headers=headers)
 			content = BeautifulSoup(response.content, "html.parser")
 		except:
 			print("Connection failed - check URL")
@@ -80,13 +88,17 @@ def getData():
 
 	carArray = []	
 	cars = content.findAll('div', attrs={"class": "su-post"})
+	#cars = get each <li> child from parent <ul> with id="standard_usedcar_list"
 	
 	for car in cars:
+		#titles is now inside a h3 header instead of h2, does not have its own class
+
 		titles = car.find('h2', attrs={"class": "su-post-title"})
 		#need to filter this futher, unicode chars like \u30105181 \u3011 are being saved to JSON
 		titleText= titles.find('a').contents[0]
 
 		if "bnr32" in titleText.lower():
+			#date added no longer displayed on website so cant be scraped
 			dateAdded = car.find('div', attrs={"class": "su-post-meta"}).text
 			
 			#rewrite this part, cleaner to get just this url instead of all every time
@@ -135,6 +147,8 @@ def getData():
 			#check if json to be written already exists
 			with open('carList.json', 'w') as outfile:
 				json.dump(carArray, outfile)
+				#s3_resource.Object(first_bucket_name, first_file_name).upload_file(
+    			#Filename=first_file_name)
 		except:
 			print("Write to file failed")
 
