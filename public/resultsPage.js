@@ -9,7 +9,7 @@ var jsonData;
 window.addEventListener('load', (event) => {
   console.log('page is fully loaded');
   getJson();
-  //scrapeTimer();
+  w3timer();
 });
 
 function getJson() {
@@ -81,30 +81,75 @@ function updateValues(myObj) {
   updatePrices();
 }
 
-function scrapeTimer() {
-  //var countDownDate = new Date("Nov 29, 2020 15:37:25").getTime();
-  var countDownDate = new Date("Jan 12, 2021 15:37:25").getTime();
+function scrapeTimer(){
+  var countDownDate;
+
+  function calculateTargetDate(){
+    var today = new Date();
+    var tomorrow = new Date(today.getTime() + 1000*60*60*24);
+    if (today.getHours() < 15) {
+      countDownDate = new Date(today.setHours(15)).getTime();
+    }
+    else if (today.getHours() > 15){
+      countDownDate = new Date(tomorrow.setHours(15)).getTime();
+      console.log("should only log once")
+    }
+    return countDownDate;
+  }
+  calculateTargetDate();
+  //should do var countDownDate = function...
+
+  var x = setInterval(function() {
+    console.log(countDownDate);
+    var now = new Date().getTime();
+
+    var distance = countDownDate - now;
+    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+  
+    document.getElementById("timer").innerHTML = days + "d " + hours + "h "
+    + minutes + "m " + seconds + "s ";
+    console.log(hours, minutes, seconds);
+  }, 1000)
+}
+
+function oldscrapeTimer() {
+  var countDownDate = new Date("Jan 13, 2021 12rs:37:25").getTime();
   var x = setInterval(function () {
+    var targetTime;
+
     var now = new Date().getTime();
     var today = new Date();
     var formattedToday = new Date(1606665221776);
     var tomorrow = new Date(today.getTime()+1000*60*60*24);
     //var tomorrow = today.setDate(today.getDate() + 1);
     var targetDate = new Date();
+    console.log("current time is: " + today.getHours());
     if (today.getHours() < 15) {
+      console.log("current time is less than 3pm");
       targetDate = today.setHours(15);
-      var targetTime = targetDate.getTime();
-      console.log(targetTime);
+      console.log("targetdate:" + targetDate);
       //targetDate = new Date(today.setHours(15));
+      targetTime = targetDate.getTime();
+      console.log(targetTime);
+      
     }
     else {
+      console.log("current time is less than 3pm");
       targetDate = new Date(tomorrow.setHours(15));
+      targetTime = targetDate.getTime();
+
     }
+    console.log("target time is: " + targetDate);
+    //var distance = targetDate - now;  //should 
     var distance = targetDate - now;
-    console.log(distance);
+    console.log("distance is: " + distance);
     var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
     var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    console.log(hpurs, minutes, seconds);
     document.getElementById("timer").innerHTML = hours + "h "
       + minutes + "m " + seconds + "s ";
   });
