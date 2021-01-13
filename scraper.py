@@ -14,6 +14,7 @@ from datetime import datetime
 import time
 import random
 import re
+import boto3
 
 urlList = []
 
@@ -21,13 +22,25 @@ url = 'https://trustplanning.world/used-car-inventory-list/'
 LOCAL_URL_PATH = "C:\\Users\\Paul\\kikaku.html"
 S3_URL_PATH = ""
 LOCAL_SUBURL_PATH = "C:\\Users\\Paul\\kikakuSubpage.html"
-WORKING_DIRECTORY = "C:\\Users\\paulf\\Documents\\Code\\simpleScraper
+WORKING_DIRECTORY = "C:\\Users\\paulf\\Documents\\Code\\simpleScraper"
 MAX_PRICE = 2000000
 MAX_YEAR = 1991
+BUCKET_NAME = "bucket-for-ttt"
 
 filterResults = False
 useHostedSite = True
 
+def connectToS3():
+	s3 = boto3.resource('s3')
+	data = s3.Object(BUCKET_NAME, 'index.html').get()['Body'].read()
+	print(data)
+
+def putFileToS3(jsonFile):
+	with open('testFile.json', 'w') as f:
+		f.write(jsonFile)
+	s3 = boto3.resource('s3')
+	bucket = s3.Object(bucket_name=BUCKET_NAME, key='testFile.json')
+	bucket.upload_file('testFile.json')
 
 def getSubpageData(subUrl):
 	#can now get year and price from website without having to scrape subpage
@@ -147,8 +160,6 @@ def getData():
 			#check if json to be written already exists
 			with open('carList.json', 'w') as outfile:
 				json.dump(carArray, outfile)
-				#s3_resource.Object(first_bucket_name, first_file_name).upload_file(
-    			#Filename=first_file_name)
 		except:
 			print("Write to file failed")
 
@@ -197,5 +208,14 @@ def parseData():
 # if __name__ == "__main__":
     # main()
 	
-getData()
+#getData()
 #parseData()
+#connectToS3()
+
+x = {
+  "name": "John",
+  "age": 30,
+  "city": "New York"
+}
+jData = json.dumps(x)
+putFileToS3(jData)
