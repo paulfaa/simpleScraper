@@ -1,6 +1,11 @@
 h1{
     background-color: greenyellow;
 }
+#dataContainer{
+    box-shadow: 5px 10px #888888;
+    background-color: lightblue;
+    padding: 25px;
+}
 /* table:nth-child(even) {
     background-color: greenyellow;
     

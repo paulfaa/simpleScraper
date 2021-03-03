@@ -8,7 +8,8 @@ var jsonData;
 window.addEventListener('load', (event) => {
   console.log('page is fully loaded');
   getJson();
-  w3timer();
+  scrapeTimer();
+  changeFormatter();
 });
 
 function getJson() {
@@ -37,6 +38,24 @@ function urlFormatter(value, row, index) {
   var linkText = row.model;
   var link = row.url[0]; //this should be changed from array to string
   return "<a href='"+link+"'>"+linkText+"</a>";
+}
+
+function changeFormatter(){
+  var elements = document.getElementsByClassName("change");
+  console.log(elements[1].textContent);
+  for(var i=0; i<elements.length; i++) {
+    var value = elements[i].textContent;
+    if (value > 0) {
+      elements[i].innerHTML = "▴ " + value + "%";
+      elements[i].classList.add("text-success");
+    }
+    if (value < 0) {
+      elements[i].innerHTML = "▾ " + value + "%";
+      elements[i].classList.add("text-danger");
+    }
+}
+  
+  
 }
 
 /* function createTable() {
@@ -87,10 +106,13 @@ function scrapeTimer(){
     var today = new Date();
     var tomorrow = new Date(today.getTime() + 1000*60*60*24);
     if (today.getHours() < 15) {
-      countDownDate = new Date(today.setHours(15)).getTime(); //should also set minutes using today.getMinutes()
+      countDownDate = new Date(today.setHours(15,0,0)).getTime(); //should also set minutes using today.getMinutes()
+      console.log("target fate is today");
     }
     else if (today.getHours() > 15){
-      countDownDate = new Date(tomorrow.setHours(15)).getTime();
+      countDownDate = new Date(tomorrow.setHours(15,0,0)).getTime();
+      console.log("target date is tomorrow");
+      console.log(countDownDate);
     }
     return countDownDate;
   }
@@ -98,18 +120,17 @@ function scrapeTimer(){
   //should do var countDownDate = function...
 
   var x = setInterval(function() {
-    console.log(countDownDate);
+    //console.log(countDownDate);
     var now = new Date().getTime();
 
     var distance = countDownDate - now;
-    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
     var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
     var seconds = Math.floor((distance % (1000 * 60)) / 1000);
   
-    document.getElementById("timer").innerHTML = days + "d " + hours + "h "
+    document.getElementById("timer").innerHTML = hours + "h "
     + minutes + "m " + seconds + "s ";
-    console.log(hours, minutes, seconds);
+    //console.log(hours, minutes, seconds);
   }, 1000)
 }
 
