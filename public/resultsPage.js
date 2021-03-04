@@ -42,7 +42,6 @@ function urlFormatter(value, row, index) {
 
 function changeFormatter(){
   var elements = document.getElementsByClassName("change");
-  console.log(elements[1].textContent);
   for(var i=0; i<elements.length; i++) {
     var value = elements[i].textContent;
     if (value > 0) {
@@ -91,7 +90,6 @@ function updateValues(myObj) {
     document.getElementById("minPrice").innerHTML = minPrice;
 
     var avg = prices.reduce((p, c, _, a) => p + c / a.length, 0);
-    console.log(avg)
     document.getElementById("avgPrice").innerHTML = avg;
   }
 
@@ -106,13 +104,10 @@ function scrapeTimer(){
     var today = new Date();
     var tomorrow = new Date(today.getTime() + 1000*60*60*24);
     if (today.getHours() < 15) {
-      countDownDate = new Date(today.setHours(15,0,0)).getTime(); //should also set minutes using today.getMinutes()
-      console.log("target fate is today");
+      countDownDate = new Date(today.setHours(15,0,0)).getTime();
     }
     else if (today.getHours() > 15){
       countDownDate = new Date(tomorrow.setHours(15,0,0)).getTime();
-      console.log("target date is tomorrow");
-      console.log(countDownDate);
     }
     return countDownDate;
   }
@@ -133,44 +128,3 @@ function scrapeTimer(){
     //console.log(hours, minutes, seconds);
   }, 1000)
 }
-
-function oldscrapeTimer() {
-  var countDownDate = new Date("Jan 13, 2021 12rs:37:25").getTime();
-  var x = setInterval(function () {
-    var targetTime;
-
-    var now = new Date().getTime();
-    var today = new Date();
-    var formattedToday = new Date(1606665221776);
-    var tomorrow = new Date(today.getTime()+1000*60*60*24);
-    //var tomorrow = today.setDate(today.getDate() + 1);
-    var targetDate = new Date();
-    console.log("current time is: " + today.getHours());
-    if (today.getHours() < 15) {
-      console.log("current time is less than 3pm");
-      targetDate = today.setHours(15);
-      console.log("targetdate:" + targetDate);
-      //targetDate = new Date(today.setHours(15));
-      targetTime = targetDate.getTime();
-      console.log(targetTime);
-      
-    }
-    else {
-      console.log("current time is less than 3pm");
-      targetDate = new Date(tomorrow.setHours(15));
-      targetTime = targetDate.getTime();
-
-    }
-    console.log("target time is: " + targetDate);
-    //var distance = targetDate - now;  //should 
-    var distance = targetDate - now;
-    console.log("distance is: " + distance);
-    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-    console.log(hpurs, minutes, seconds);
-    document.getElementById("timer").innerHTML = hours + "h "
-      + minutes + "m " + seconds + "s ";
-  });
-}
-
