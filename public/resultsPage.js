@@ -14,7 +14,7 @@ window.addEventListener('load', (event) => {
 
 function getJson() {
   var $table = $('#table');
-  var myData = $.getJSON("carList.json").done(function (jsonData) {
+  var myData = $.getJSON("carList.json").done(function (jsonData) {  //should pull this from S3 server instead of local system
     updateValues(jsonData);
     $('#table').bootstrapTable({data: jsonData});
   });
@@ -127,4 +127,19 @@ function scrapeTimer(){
     + minutes + "m " + seconds + "s ";
     //console.log(hours, minutes, seconds);
   }, 1000)
+}
+
+function getYenToEuroRate(){
+  var rate;
+  $.getJSON("https://api.exchangeratesapi.io/latest?base=JPY&symbols=EUR", function (data) {
+    rate = data.rates.EUR;
+    var amountToConvert = document.getElementById("amountInput").value;
+    if (amountToConvert == null) {
+      console.log("Cannot convert null value")
+    } else {
+      var total = (rate * amountToConvert).toFixed(2);
+      console.log(total);
+      document.getElementById("amountInput").value = total;
+    }
+  })
 }
