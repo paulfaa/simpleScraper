@@ -2,7 +2,6 @@
 //need to serve \node_modules\bootstrap\dist\js to stop 404 error
 //sorting works, add arrow to table being sorted
 //add scrape now button
-
 var jsonData;
 
 window.addEventListener('load', (event) => {
@@ -129,7 +128,17 @@ function scrapeTimer(){
   }, 1000)
 }
 
-function getYenToEuroRate(){
+$("#amountInput").on('keyup', function(){
+  var n = parseInt($(this).val().replace(/\D/g,''),10);
+  $(this).val(n.toLocaleString());
+});
+
+function formatNumberInput(){
+  var amountInput = document.getElementById("amountInput").value;
+  document.getElementById("amountInput").value = numeral(amountInput).format('$0,0.00');
+}
+
+function convertJpyToEur(){
   var rate;
   $.getJSON("https://api.exchangeratesapi.io/latest?base=JPY&symbols=EUR", function (data) {
     rate = data.rates.EUR;
@@ -139,7 +148,9 @@ function getYenToEuroRate(){
     } else {
       var total = (rate * amountToConvert).toFixed(2);
       console.log(total);
-      document.getElementById("amountInput").value = total;
+      document.getElementById("conversionRate").innerHTML = "1 JPY = " + rate.toFixed(5); + " EUR";
+      document.getElementById("conversionOutput").innerHTML = "€" + numeral(total).format('0,0.00');
+      //document.getElementById("amountInput").value = total.toLocaleString();
     }
   })
 }

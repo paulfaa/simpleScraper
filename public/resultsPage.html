@@ -10,28 +10,24 @@
     <script src="https://unpkg.com/bootstrap-table@1.14.2/dist/bootstrap-table.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/bootstrap-table@1.15.5/dist/bootstrap-table.min.css">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
     <link rel="stylesheet" href="resultsPage.css">
     <title>Scrape results</title>
-
-    <div class="container">
-      <div class="panel-group">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <div class="panel-title">
-              <a data-toggle="collapse" href="#collapse1">Collapsible panel</a>
-            </div>
-          </div>
-          <div id="collapse1" class="panel-collapse collapse">
-            Contents of panel...
-          </div>
-        </div>
-      </div>
-    </div>
   </head>
 
   <body>
     <script src="resultsPage.js"></script>
     <h1 style="background-color: rgb(144, 47, 255); padding-bottom: 10px; padding-left: 10px;">Scrape results...</h1>
+
+    <form class="form-inline float-sm-right" id="convertButton">
+      <button class="btn btn-outline-primary my-2 my-sm-0" type="button">Convert</button>
+    </form>
+
+    <div>
+      Test div to put convert
+      Form in. Should be set to
+      float right
+    </div>
   
     <ul class="nav nav-tabs">
       <li class="nav-item">
@@ -40,6 +36,9 @@
       <li class="nav-item">
           <a href="#auction" class="nav-link" data-toggle="tab">Upcoming Auctions</a>
       </li>
+      <li class="nav-item">
+        <a href="#auction" class="nav-link" data-toggle="tab">Currency conversion </a>
+    </li>
     </ul>
 
     <p id="content"></p>
@@ -111,13 +110,11 @@
 
 
       <div class="tab-pane fade" id="auction">
-        <p>Profile tab content ...</p>
-        <p>Profile tab content ...</p>
-        <p>Profile tab content ...</p>
-        <p>Profile tab content ...</p>
-        <label for="amount">Amount to convert :</label>
-        <input type="text" id="amountInput" name="amount">
-        <button onclick="getYenToEuroRate()">Convert To Euro</button>
+        <label for="amount">Yen to convert :</label>
+        <input type="number" id="amountInput" name="amount" >
+        <p id="conversionRate"></p>
+        <p id="conversionOutput"></p>
+        <button onclick="convertJpyToEur()">Convert To Euro</button>
 
       </div>
     </div>

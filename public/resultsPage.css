@@ -6,6 +6,16 @@ h1{
     background-color: lightblue;
     padding: 25px;
 }
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+#convertButton{
+    padding-top: 0px;
+    padding-right: 50px;
+    padding-bottom: 30px;
+}
 /* table:nth-child(even) {
     background-color: greenyellow;
     
