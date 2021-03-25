@@ -20,14 +20,8 @@
     <h1 style="background-color: rgb(144, 47, 255); padding-bottom: 10px; padding-left: 10px;">Scrape results...</h1>
 
     <form class="form-inline float-sm-right" id="convertButton">
-      <button class="btn btn-outline-primary my-2 my-sm-0" type="button">Convert</button>
+      <button class="btn btn-outline-primary my-2 my-sm-0" type="button" data-toggle="modal" data-target="#convertModal">Convert Yen</button>
     </form>
-
-    <div>
-      Test div to put convert
-      Form in. Should be set to
-      float right
-    </div>
   
     <ul class="nav nav-tabs">
       <li class="nav-item">
@@ -36,10 +30,34 @@
       <li class="nav-item">
           <a href="#auction" class="nav-link" data-toggle="tab">Upcoming Auctions</a>
       </li>
-      <li class="nav-item">
-        <a href="#auction" class="nav-link" data-toggle="tab">Currency conversion </a>
-    </li>
     </ul>
+
+    <div class="modal fade" id="convertModal" tabindex="-1" role="dialog" aria-labelledby="convertModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Convert Yen to Euro</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-group">
+                <label for="amount" class="col-form-label">Amount :</label>
+                <input type="number" id="amountInput" class="form-control" name="amount">
+              </div>
+              <p id="conversionRate"></p>
+              <br>
+              <p id="conversionOutput"></p>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" onclick="convertJpyToEur()">Convert</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <p id="content"></p>
 
@@ -111,11 +129,10 @@
 
       <div class="tab-pane fade" id="auction">
         <label for="amount">Yen to convert :</label>
-        <input type="number" id="amountInput" name="amount" >
+        <input type="number" id="amountInput" name="amount">
         <p id="conversionRate"></p>
         <p id="conversionOutput"></p>
         <button onclick="convertJpyToEur()">Convert To Euro</button>
-
       </div>
     </div>
 

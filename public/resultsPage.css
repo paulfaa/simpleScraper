@@ -2,9 +2,23 @@ h1{
     background-color: greenyellow;
 }
 #dataContainer{
-    box-shadow: 5px 10px #888888;
     background-color: lightblue;
-    padding: 25px;
+    box-shadow: 5px 10px #c4c1c1;
+}
+#auction{
+    padding: 15px;
+}
+#conversionRate{
+    font-size: 75%;
+}
+#conversionOutput{
+    font-size: 125%;
+}
+.col-md-auto{
+    background-image: linear-gradient(0deg, rgba(255,0,0,0), rgb(192, 181, 233));
+    padding-left: 5%;
+    padding-right: 5%;
+    margin: 25px;
 }
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -12,9 +26,13 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 #convertButton{
+    margin-top: 0px;
+    margin-bottom: 0px;
     padding-top: 0px;
-    padding-right: 50px;
-    padding-bottom: 30px;
+    display: inline-block;
+    position: relative;
+    top: -2px;
+    right: 15px;
 }
 /* table:nth-child(even) {
     background-color: greenyellow;
