@@ -3,7 +3,7 @@ h1{
 }
 #dataContainer{
     background-color: lightblue;
-    box-shadow: 5px 10px #c4c1c1;
+    box-shadow: 5px 10px #c3e9ff;
 }
 #auction{
     padding: 15px;
@@ -13,6 +13,9 @@ h1{
 }
 #conversionOutput{
     font-size: 125%;
+}
+#auction{
+    width: 100%;
 }
 .col-md-auto{
     background-image: linear-gradient(0deg, rgba(255,0,0,0), rgb(192, 181, 233));

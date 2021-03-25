@@ -31,11 +31,17 @@ function getJson() {
   return data;
 } */
 
-function priceFormatter(value, row, index) {
-  return "¥" + row.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+function tablePriceFormatter(value, row, index) {
+  //for bootstrap table
+  return '¥ ' + numeral(row.price).format('¥,');
+}
+
+function priceFormatter(price){
+  return '¥ ' + numeral(price).format('¥,');
 }
 
 function urlFormatter(value, row, index) {
+  //for bootstrap table
   var linkText = row.model;
   var link = row.url[0]; //this should be changed from array to string
   return "<a href='"+link+"'>"+linkText+"</a>";
@@ -87,11 +93,11 @@ function updateValues(myObj) {
     var maxPrice = Math.max.apply(null, prices);
     var minPrice = Math.min.apply(null, prices);
 
-    document.getElementById("maxPrice").innerHTML = maxPrice;
-    document.getElementById("minPrice").innerHTML = minPrice;
+    document.getElementById("maxPrice").innerHTML = priceFormatter(maxPrice);
+    document.getElementById("minPrice").innerHTML = priceFormatter(minPrice);
 
     var avg = prices.reduce((p, c, _, a) => p + c / a.length, 0);
-    document.getElementById("avgPrice").innerHTML = avg;
+    document.getElementById("avgPrice").innerHTML = priceFormatter(avg);
   }
 
   updateDates();
@@ -150,7 +156,7 @@ function convertJpyToEur(){
     } else {
       var total = (rate * amountToConvert).toFixed(2);
       console.log(total);
-      document.getElementById("conversionRate").innerHTML = "(1 JPY = " + rate.toFixed(5) + " EUR)";
+      document.getElementById("conversionRate").innerHTML = "(1 JPY = " + rate.toFixed(6) + " EUR)";
       document.getElementById("conversionOutput").innerHTML = "€" + numeral(total).format('0,0.00');
       //console.log(document.getElementById("amountInput").value = parseFloat(total).toLocaleString());
     }
