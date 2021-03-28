@@ -5,6 +5,7 @@
 //dropdown with panel for conversion
 //make css look nicer
 var jsonData;
+var oldJsonData;
 
 window.addEventListener('load', (event) => {
   console.log('page is fully loaded');
@@ -14,14 +15,13 @@ window.addEventListener('load', (event) => {
 });
 
 function getJson() {
-  var $table = $('#table');
+  //var $table = $('#table');
+  oldJsonData = $.getJSON("oldCarList.json");
+  console.log(oldJsonData);
   var myData = $.getJSON("carList.json").done(function (jsonData) {  //should pull this from S3 server instead of local system
     updateValues(jsonData);
-    $('#table').bootstrapTable({data: jsonData});
+    $('#table').bootstrapTable({ data: jsonData });
   });
-  //updateValues(jsonData);
-  //$('#table').bootstrapTable({data: jsonData});
-  //$(table).bootstrapTable({ data: myData });
 }
 
 /* function importJSON() {
@@ -36,7 +36,7 @@ function tablePriceFormatter(value, row, index) {
   return '¥ ' + numeral(row.price).format('¥,');
 }
 
-function priceFormatter(price){
+function priceFormatter(price) {
   return '¥ ' + numeral(price).format('¥,');
 }
 
@@ -44,12 +44,12 @@ function urlFormatter(value, row, index) {
   //for bootstrap table
   var linkText = row.model;
   var link = row.url[0]; //this should be changed from array to string
-  return "<a href='"+link+"'>"+linkText+"</a>";
+  return "<a href='" + link + "'>" + linkText + "</a>";
 }
 
-function changeFormatter(){
+function changeFormatter() {
   var elements = document.getElementsByClassName("change");
-  for(var i=0; i<elements.length; i++) {
+  for (var i = 0; i < elements.length; i++) {
     var value = elements[i].textContent;
     if (value > 0) {
       elements[i].innerHTML = "▴ " + value + "%";
@@ -59,9 +59,7 @@ function changeFormatter(){
       elements[i].innerHTML = "▾ " + value + "%";
       elements[i].classList.add("text-danger");
     }
-}
-  
-  
+  }
 }
 
 /* function createTable() {
@@ -74,17 +72,17 @@ function updateValues(myObj) {
   var countKey = Object.keys(myObj).length;
   document.getElementById("totalCars").innerHTML = countKey;
 
-  function updateDates(){
+  function updateDates() {
     var dates = []
-  for (var i in myObj) {
-    dates.push(myObj[i].dateAdded);
+    for (var i in myObj) {
+      dates.push(myObj[i].dateAdded);
+    }
+    var dates = dates.map(function (x) { return new Date(x); })
+    var lastUpdate = new Date(Math.max.apply(null, dates));
+    document.getElementById("lastUpdate").innerHTML = lastUpdate.toISOString().slice(0, 10);;
   }
-  var dates = dates.map(function(x) { return new Date(x); })
-  var lastUpdate = new Date(Math.max.apply(null,dates));
-  document.getElementById("lastUpdate").innerHTML = lastUpdate.toISOString().slice(0,10);;
-  }
-  
-  function updatePrices(){
+
+  function updatePrices() {
     var prices = []
     for (var i in myObj) {
       prices.push(myObj[i].price);
@@ -104,24 +102,24 @@ function updateValues(myObj) {
   updatePrices();
 }
 
-function scrapeTimer(){
+function scrapeTimer() {
   var countDownDate;
 
-  function calculateTargetDate(){
+  function calculateTargetDate() {
     var today = new Date();
-    var tomorrow = new Date(today.getTime() + 1000*60*60*24);
+    var tomorrow = new Date(today.getTime() + 1000 * 60 * 60 * 24);
     if (today.getHours() < 15) {
-      countDownDate = new Date(today.setHours(15,0,0)).getTime();
+      countDownDate = new Date(today.setHours(15, 0, 0)).getTime();
     }
-    else if (today.getHours() > 15){
-      countDownDate = new Date(tomorrow.setHours(15,0,0)).getTime();
+    else if (today.getHours() > 15) {
+      countDownDate = new Date(tomorrow.setHours(15, 0, 0)).getTime();
     }
     return countDownDate;
   }
   calculateTargetDate();
   //should do var countDownDate = function...
 
-  var x = setInterval(function() {
+  var x = setInterval(function () {
     //console.log(countDownDate);
     var now = new Date().getTime();
 
@@ -129,33 +127,43 @@ function scrapeTimer(){
     var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
     var seconds = Math.floor((distance % (1000 * 60)) / 1000);
-  
+
     document.getElementById("timer").innerHTML = hours + "h "
-    + minutes + "m " + seconds + "s ";
+      + minutes + "m " + seconds + "s ";
     //console.log(hours, minutes, seconds);
   }, 1000)
 }
 
-$("#amountInput").on('keyup', function(){
-  var n = parseInt($(this).val().replace(/\D/g,''),10);
+$("#amountInput").on('keyup', function () {
+  var n = parseInt($(this).val().replace(/\D/g, ''), 10);
   $(this).val(n.toLocaleString());
 });
 
-function formatNumberInput(){
+function formatNumberInput() {
   var amountInput = document.getElementById("amountInput").value;
   document.getElementById("amountInput").value = numeral(amountInput).format('$0,0.00');
 }
 
-function convertJpyToEur(){
+function clearInput(){
+  document.getElementById("amountInput").value = null;
+  document.getElementById("conversionRate").innerHTML = null;
+  document.getElementById("conversionOutput").innerHTML = null;
+}
+
+function convertJpyToEur() {
   var rate;
   $.getJSON("https://api.exchangeratesapi.io/latest?base=JPY&symbols=EUR", function (data) {
     rate = data.rates.EUR;
     var amountToConvert = document.getElementById("amountInput").value;
-    if (amountToConvert == null) {
-      console.log("Cannot convert null value")
+    if (amountToConvert == 0) {
+      $("#conversionRate").show();
+      console.log("Cannot convert null value");
+      document.getElementById("conversionRate").innerHTML = "Enter an amount to convert.";
+      $("#conversionRate").fadeOut(2000);
     } else {
       var total = (rate * amountToConvert).toFixed(2);
       console.log(total);
+      $("#conversionRate").show();
       document.getElementById("conversionRate").innerHTML = "(1 JPY = " + rate.toFixed(6) + " EUR)";
       document.getElementById("conversionOutput").innerHTML = "€" + numeral(total).format('0,0.00');
       //console.log(document.getElementById("amountInput").value = parseFloat(total).toLocaleString());
