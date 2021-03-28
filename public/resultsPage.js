@@ -11,6 +11,7 @@ window.addEventListener('load', (event) => {
   console.log('page is fully loaded');
   getJson();
   scrapeTimer();
+  getDifference();
   changeFormatter();
 });
 
@@ -18,18 +19,11 @@ function getJson() {
   //var $table = $('#table');
   oldJsonData = $.getJSON("oldCarList.json");
   console.log(oldJsonData);
-  var myData = $.getJSON("carList.json").done(function (jsonData) {  //should pull this from S3 server instead of local system
+  jsonData = $.getJSON("carList.json").done(function (jsonData) {  //should pull this from S3 server instead of local system
     updateValues(jsonData);
     $('#table').bootstrapTable({ data: jsonData });
   });
 }
-
-/* function importJSON() {
-  var data = fetch("./carList.json")
-    .then(response => response.json())
-    .then(data => console.log(data));
-  return data;
-} */
 
 function tablePriceFormatter(value, row, index) {
   //for bootstrap table
@@ -54,6 +48,7 @@ function changeFormatter() {
     if (value > 0) {
       elements[i].innerHTML = "▴ " + value + "%";
       elements[i].classList.add("text-success");
+      //also need to remove any other text classes here
     }
     if (value < 0) {
       elements[i].innerHTML = "▾ " + value + "%";
@@ -97,9 +92,34 @@ function updateValues(myObj) {
     var avg = prices.reduce((p, c, _, a) => p + c / a.length, 0);
     document.getElementById("avgPrice").innerHTML = priceFormatter(avg);
   }
-
   updateDates();
   updatePrices();
+}
+
+//compare the changes from the most recent json with previous
+function getDifference(){
+  var prices = []
+  var oldPrices = []
+    for (var i in jsonData) {
+      prices.push(jsonData[i].price);  //showing up as undefined
+    }
+    for (var i in oldJsonData) {
+      console.log(i);
+      oldPrices.push(oldJsonData[i].price);
+    }
+  var max = Math.max.apply(null, prices);
+  var oldMax = Math.max.apply(null, oldPrices);
+
+  console.log(max);
+  console.log(oldMax);
+  var difference = max - oldMax
+  difference = ((difference / oldMax) * 100).toFixed(2);
+  console.log(difference);
+  document.getElementById("maxChange").innerHTML = difference;
+
+  //get avg of both old and new data
+  //new avg - old avg
+  //difference / old avg * 100
 }
 
 function scrapeTimer() {
