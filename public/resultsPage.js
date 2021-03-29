@@ -11,7 +11,7 @@ window.addEventListener('load', (event) => {
   console.log('page is fully loaded');
   getJson();
   scrapeTimer();
-  getDifference();
+  //getDifference();
   changeFormatter();
 });
 
@@ -66,6 +66,12 @@ function changeFormatter() {
 function updateValues(myObj) {
   var countKey = Object.keys(myObj).length;
   document.getElementById("totalCars").innerHTML = countKey;
+  var years = []
+  for (var i in myObj) {
+    years.push(myObj[i].year);
+  }
+  var a = Math.round(years.reduce((p, c, _, a) => p + c / a.length, 0));
+  document.getElementById("averageYear").innerHTML = a;
 
   function updateDates() {
     var dates = []
@@ -79,18 +85,36 @@ function updateValues(myObj) {
 
   function updatePrices() {
     var prices = []
+    var oldPrices = []
+
     for (var i in myObj) {
       prices.push(myObj[i].price);
     }
 
     var maxPrice = Math.max.apply(null, prices);
     var minPrice = Math.min.apply(null, prices);
-
     document.getElementById("maxPrice").innerHTML = priceFormatter(maxPrice);
     document.getElementById("minPrice").innerHTML = priceFormatter(minPrice);
 
     var avg = prices.reduce((p, c, _, a) => p + c / a.length, 0);
     document.getElementById("avgPrice").innerHTML = priceFormatter(avg);
+
+    oldPrices = $.getJSON( "oldCarList.json", function( data ) {
+      var items = [];
+      console.log(data);
+      for (var i in data) {
+        items.push(data[i].price);
+      }
+      var oldMax = Math.max.apply(null, items);
+      var maxDifference = maxPrice - oldMax;
+      maxDifference = ((maxDifference / oldMax) * 100).toFixed(2);
+      document.getElementById("maxChange").innerHTML = maxDifference;
+
+      var oldMin = Math.min.apply(null, items);
+      var minDifference = minPrice - oldMin;
+      minDifference = ((minDifference / oldMin) * 100).toFixed(2);
+      document.getElementById("minChange").innerHTML = minDifference;
+    });
   }
   updateDates();
   updatePrices();
@@ -100,11 +124,11 @@ function updateValues(myObj) {
 function getDifference(){
   var prices = []
   var oldPrices = []
+  //console.log(oldJsonData);
     for (var i in jsonData) {
       prices.push(jsonData[i].price);  //showing up as undefined
     }
     for (var i in oldJsonData) {
-      console.log(i);
       oldPrices.push(oldJsonData[i].price);
     }
   var max = Math.max.apply(null, prices);
@@ -116,7 +140,6 @@ function getDifference(){
   difference = ((difference / oldMax) * 100).toFixed(2);
   console.log(difference);
   document.getElementById("maxChange").innerHTML = difference;
-
   //get avg of both old and new data
   //new avg - old avg
   //difference / old avg * 100
