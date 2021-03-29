@@ -44,24 +44,19 @@ function urlFormatter(value, row, index) {
 function changeFormatter() {
   var elements = document.getElementsByClassName("change");
   for (var i = 0; i < elements.length; i++) {
-    var value = elements[i].textContent;
-    if (value > 0) {
-      elements[i].innerHTML = "▴ " + value + "%";
+    var change = elements[i].innerHTML; //cant get text within div for some reason
+    console.log(change);
+    if (change > 0) {
+      elements[i].innerHTML = "▴ " + change + "%";
       elements[i].classList.add("text-success");
       //also need to remove any other text classes here
     }
-    if (value < 0) {
-      elements[i].innerHTML = "▾ " + value + "%";
+    if (change < 0) {
+      elements[i].innerHTML = "▾ " + change + "%";
       elements[i].classList.add("text-danger");
     }
   }
 }
-
-/* function createTable() {
-  var jsonFile = importJSON();
-  var table = $('#table');
-  $('#table').bootstrapTable({ data: jsonFile });
-} */
 
 function updateValues(myObj) {
   var countKey = Object.keys(myObj).length;
@@ -101,48 +96,32 @@ function updateValues(myObj) {
 
     oldPrices = $.getJSON( "oldCarList.json", function( data ) {
       var items = [];
-      console.log(data);
       for (var i in data) {
         items.push(data[i].price);
       }
+
+      function getPercentageChange(newValue, oldValue){
+        var diff = newValue - oldValue;
+        diff = ((diff / oldValue) * 100).toFixed(2);
+        return diff;
+      }
+
       var oldMax = Math.max.apply(null, items);
-      var maxDifference = maxPrice - oldMax;
-      maxDifference = ((maxDifference / oldMax) * 100).toFixed(2);
-      document.getElementById("maxChange").innerHTML = maxDifference;
+      document.getElementById("maxChange").innerHTML = getPercentageChange(maxPrice, oldMax);
 
       var oldMin = Math.min.apply(null, items);
       var minDifference = minPrice - oldMin;
       minDifference = ((minDifference / oldMin) * 100).toFixed(2);
       document.getElementById("minChange").innerHTML = minDifference;
+
+      var oldAvg = items.reduce((p, c, _, a) => p + c / a.length, 0);
+      var avgDifference = avg - oldAvg;
+      avgDifference = ((avgDifference / oldAvg) * 100).toFixed(2);
+      document.getElementById("avgChange").innerHTML = avgDifference;
     });
   }
   updateDates();
   updatePrices();
-}
-
-//compare the changes from the most recent json with previous
-function getDifference(){
-  var prices = []
-  var oldPrices = []
-  //console.log(oldJsonData);
-    for (var i in jsonData) {
-      prices.push(jsonData[i].price);  //showing up as undefined
-    }
-    for (var i in oldJsonData) {
-      oldPrices.push(oldJsonData[i].price);
-    }
-  var max = Math.max.apply(null, prices);
-  var oldMax = Math.max.apply(null, oldPrices);
-
-  console.log(max);
-  console.log(oldMax);
-  var difference = max - oldMax
-  difference = ((difference / oldMax) * 100).toFixed(2);
-  console.log(difference);
-  document.getElementById("maxChange").innerHTML = difference;
-  //get avg of both old and new data
-  //new avg - old avg
-  //difference / old avg * 100
 }
 
 function scrapeTimer() {
