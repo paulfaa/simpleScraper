@@ -12,16 +12,18 @@ window.addEventListener('load', (event) => {
   getJson();
   scrapeTimer();
   //getDifference();
-  changeFormatter();
+  
 });
 
 function getJson() {
   //var $table = $('#table');
   oldJsonData = $.getJSON("oldCarList.json");
-  console.log(oldJsonData);
   jsonData = $.getJSON("carList.json").done(function (jsonData) {  //should pull this from S3 server instead of local system
     updateValues(jsonData);
     $('#table').bootstrapTable({ data: jsonData });
+    setTimeout(() => {
+      changeFormatter()
+    }, 0);
   });
 }
 
@@ -42,16 +44,17 @@ function urlFormatter(value, row, index) {
 }
 
 function changeFormatter() {
+  console.log("running formatter")
   var elements = document.getElementsByClassName("change");
   for (var i = 0; i < elements.length; i++) {
-    var change = elements[i].innerHTML; //cant get text within div for some reason
+    var change = elements[i].innerHTML;
     console.log(change);
-    if (change > 0) {
+    if (parseFloat(change) > 0) {
       elements[i].innerHTML = "▴ " + change + "%";
       elements[i].classList.add("text-success");
       //also need to remove any other text classes here
     }
-    if (change < 0) {
+    if (parseFloat(change) < 0) {
       elements[i].innerHTML = "▾ " + change + "%";
       elements[i].classList.add("text-danger");
     }
@@ -108,16 +111,11 @@ function updateValues(myObj) {
 
       var oldMax = Math.max.apply(null, items);
       document.getElementById("maxChange").innerHTML = getPercentageChange(maxPrice, oldMax);
-
       var oldMin = Math.min.apply(null, items);
-      var minDifference = minPrice - oldMin;
-      minDifference = ((minDifference / oldMin) * 100).toFixed(2);
-      document.getElementById("minChange").innerHTML = minDifference;
+      document.getElementById("minChange").innerHTML = getPercentageChange(minPrice, oldMin);
 
       var oldAvg = items.reduce((p, c, _, a) => p + c / a.length, 0);
-      var avgDifference = avg - oldAvg;
-      avgDifference = ((avgDifference / oldAvg) * 100).toFixed(2);
-      document.getElementById("avgChange").innerHTML = avgDifference;
+      document.getElementById("avgChange").innerHTML = getPercentageChange(avg, oldMin);
     });
   }
   updateDates();
