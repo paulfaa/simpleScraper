@@ -11,12 +11,9 @@ window.addEventListener('load', (event) => {
   console.log('page is fully loaded');
   getJson();
   scrapeTimer();
-  //getDifference();
-  
 });
 
 function getJson() {
-  //var $table = $('#table');
   oldJsonData = $.getJSON("oldCarList.json");
   jsonData = $.getJSON("carList.json").done(function (jsonData) {  //should pull this from S3 server instead of local system
     updateValues(jsonData);
@@ -172,8 +169,8 @@ function clearInput(){
 
 function convertJpyToEur() {
   var rate;
-  $.getJSON("https://api.exchangeratesapi.io/latest?base=JPY&symbols=EUR", function (data) {
-    rate = data.rates.EUR;
+  $.getJSON("https://api.exchangerate.host/convert?from=JPY&to=EUR", function (data) {
+    rate = data.info.rate;
     var amountToConvert = document.getElementById("amountInput").value;
     if (amountToConvert == 0) {
       $("#conversionRate").show();
@@ -186,7 +183,6 @@ function convertJpyToEur() {
       $("#conversionRate").show();
       document.getElementById("conversionRate").innerHTML = "(1 JPY = " + rate.toFixed(6) + " EUR)";
       document.getElementById("conversionOutput").innerHTML = "€" + numeral(total).format('0,0.00');
-      //console.log(document.getElementById("amountInput").value = parseFloat(total).toLocaleString());
     }
   })
 }
