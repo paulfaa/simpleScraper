@@ -154,10 +154,11 @@ def getData():
 		savedFileSize = len(data)
 	currentFileSize = len(carArray)
 
-	if currentFileSize > savedFileSize:
+	if (currentFileSize > savedFileSize) or savedFileSize is None:
 		try:
-			#need to append only new values to json instead of rewriting each time
-			#check if json to be written already exists
+			#if new file is bigger, rename old data and also write newest data
+			if savedFileSize is not None:
+				os.rename(WORKING_DIRECTORY + "\\carList.json", WORKING_DIRECTORY + "\\oldCarList.json")
 			with open('carList.json', 'w') as outfile:
 				json.dump(carArray, outfile)
 		except:
